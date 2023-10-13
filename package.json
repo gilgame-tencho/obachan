@@ -1,0 +1,26 @@
+{
+  "name": "obachan",
+  "version": "1.0.0",
+  "description": "Obachan no Bouken.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gilgame-tencho/obachan.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gilgame-tencho/obachan/issues"
+  },
+  "homepage": "https://github.com/gilgame-tencho/obachan#readme",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.7.2",
+    "yaml": "^2.3.2"
+  }
+}
