@@ -52,7 +52,7 @@ const gameMtr = GM.gameMtr;
 io.on('connection', function(socket) {
     let player = null;
     socket.on('game-start', (config) => {
-        console.log(`gameStart`);
+        logger.log(`gameStart`);
         player = new GM.Player({
             socketId: socket.id,
             nickname: config.nickname,
@@ -63,6 +63,7 @@ io.on('connection', function(socket) {
         });
         ccdm.players[player.id] = player;
         io.sockets.emit('new-player', player);
+        logger.log(`start plyaer: ${player.nickname}`);
     });
     socket.on('disconnect', () => {
         if(!player){return;}

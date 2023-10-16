@@ -1,1 +1,307 @@
+'use strict';
+
 let tt = new Sample();
+
+const socket = io();
+const canvFT = $('#canvas-front')[0];
+const cotxFT = canvFT.getContext('2d');
+const canvMD = $('#canvas-middle')[0];
+const cotxMD = canvMD.getContext('2d');
+const canvBK = $('#canvas-back')[0];
+const cotxBK = canvBK.getContext('2d');
+
+let timer = 0;
+
+const images = {};
+images.player = {
+    r: $('#img-player-r')[0],
+    l: $('#img-player-l')[0],
+}
+
+let my_player;
+let movement = {};
+
+const MY_USER_ID = Math.floor(Math.random()*1000000000);
+
+function drawImage(ctt, img, px, py=null, pw=null, ph=null){
+    let x; let y; let w; let h;
+    if(py == null){
+        x = px.x; y = px.y;
+        w = px.width; h = px.height;
+    }else if(ph == null){
+        x = px; y = py;
+        w = pw.width; h = pw.height;
+    }else{
+        x = px; y = py;
+        w = pw; h = ph;
+    }
+    ctt.drawImage(
+        img,
+        0, 0, img.width, img.height,
+        x, y, w, h
+    );
+}
+
+function view_reset_front(){
+    cotxFT.clearRect(0, 0, canvFT.width, canvFT.height);
+    cotxFT.lineWidth = 1;
+    cotxFT.beginPath();
+    cotxFT.rect(0, 0, canvFT.width, canvFT.height);
+    cotxFT.stroke();
+}
+function view_reset_middle(){
+    cotxMD.clearRect(0, 0, canvMD.width, canvMD.height);
+}
+function view_reset_background(){
+    cotxBK.clearRect(0, 0, canvBK.width, canvBK.height);
+    // drawImage(cotxBK, images.bg.feald, 0, 0, canvBK.width, canvBK.height);
+}
+function view_reset_all(){
+    view_reset_front();
+    view_reset_middle();
+    view_reset_background();
+}
+function debug_show_object_line(cotx, obj){
+    cotx.save();
+    cotx.lineWidth = 1;
+    cotx.strokeStyle = "#00aa00";
+    cotx.beginPath();
+    cotx.rect(obj.x, obj.y, obj.width, obj.height);
+    cotx.stroke();
+    cotx.restore();
+}
+
+function is_draw(obj, MARGIN, FIELD_WIDTH){
+    return (-MARGIN < obj.x && obj.x < FIELD_WIDTH + MARGIN)
+}
+
+// init -----
+view_reset_all();
+
+// -- timer --------
+socket.on('timer_sync', function(param) {
+    console.log(`this.timer: ${timer},\tserver.timer:${param.timer}. timer is reset.`);
+    timer = 0;
+});
+const self_timer = () => {
+    // animation --------------------
+    // // hatena
+    // let hatena = ['hatena_f1', 'hatena_f2', 'hatena_f3', 'hatena_f4', 'hatena_f3', 'hatena_f2',];
+    // let frame = 5;
+    // let i = Math.floor(timer / frame) % hatena.length;
+    // // console.log(`[self_timer] t:${timer}, i:${hatena[i]}`);
+    // images.piece.hatena = images.piece[hatena[i]];
+
+    // // coin
+    // let coin = [
+    //     'yoko',
+    //     'c45w',
+    //     'front',
+    //     'c45u',
+    // ];
+    // frame = 2;
+    // i = Math.floor(timer / frame) % coin.length;
+    // // images.effect.anime = images.effect.anime[coin[i]];
+
+    timer++;
+}
+setInterval(self_timer, 1000/FPS);
+
+// -- action param ---------
+const effects = {
+    bounding: {},
+    coin: {},
+};
+
+// -- server action --------
+socket.on('back-frame', function() {
+    view_reset_background();
+});
+
+socket.on('menu-frame', function() {
+});
+
+const menu_frame = () => {
+    view_reset_front();
+    if(!ccdm.players[MY_USER_ID]){ return }
+
+    const mymenu = ccdm.players[MY_USER_ID].menu;
+    cotxFT.save();
+    cotxFT.lineWidth = 3;
+    cotxFT.strokeStyle = "#000000";
+    cotxFT.font = "8px Bold 'ＭＳ ゴシック'";
+    cotxFT.fillText(mymenu.name.v, mymenu.name.x, mymenu.name.y);
+    cotxFT.fillText(`000010${mymenu.score.v}`, mymenu.score.x, mymenu.score.y);
+    cotxFT.fillText(`C x 0${mymenu.coin.v}`, mymenu.coin.x, mymenu.coin.y);
+    cotxFT.fillText(mymenu.stage_name.v, mymenu.stage_name.x, mymenu.stage_name.y);
+    cotxFT.fillText(mymenu.stage_no.v, mymenu.stage_no.x, mymenu.stage_no.y);
+    cotxFT.fillText(mymenu.time_title.v, mymenu.time_title.x, mymenu.time_title.y);
+    cotxFT.fillText(mymenu.time.v, mymenu.time.x, mymenu.time.y);
+    cotxFT.restore();
+}
+
+// socket.on('state', function(ccdm) {
+const draw_view = function(){
+    view_reset_middle();
+    const MARGIN = ccdm.conf.BLK * 3;
+    let VIEW_X = 0;
+    if(ccdm.players[MY_USER_ID]){
+        VIEW_X = ccdm.players[MY_USER_ID].view_x;
+    }
+
+    Object.values(ccdm.players).forEach((player) => {
+        let img = images.player[player.direction];
+        let param = {
+            x: player.x - VIEW_X,
+            y: player.y,
+            width: player.width,
+            height: player.height,
+        }
+        if(is_draw(param, MARGIN, ccdm.conf.FIELD_WIDTH)){
+            drawImage(cotxMD, img, param);
+            // debug_show_object_line(cotxMD, player);
+
+            if(player.socketId === socket.id){
+                cotxMD.save();
+                cotxMD.font = '8px Bold Arial';
+                cotxMD.fillText('You', param.x + 2, param.y - 5);
+                cotxMD.restore();
+            }
+        }
+    });
+}
+
+const main_frame = () => {
+    // ### chain block ####
+    let front_view_x = FIELD_WIDTH;
+    Object.values(ccdm.players).forEach((player) => {
+        // frame
+        player.frame();
+
+        if(front_view_x < player.view_x + FIELD_WIDTH){
+            front_view_x = player.view_x + FIELD_WIDTH;
+        }
+    });
+    // Object.values(ccdm.enemys).forEach((enemy)=>{
+    //     if(enemy.x < front_view_x){
+    //         enemy.sleep = false;
+    //     }
+    //     if(enemy.sleep){ return }
+
+    //     enemy.self_move();
+    //     Object.values(ccdm.players).forEach((player)=>{
+    //         if(enemy.intersect(player)){
+    //             player.respone();
+    //         }
+    //     });
+    // });
+    // Object.values(ccdm.players).forEach((player) => {
+    //     const movement = player.movement;
+    //     if(movement.forward){
+    //         player.move(move_score);
+    //     }
+    //     if(movement.back){
+    //         player.move(-move_score);
+    //     }
+    //     if(movement.left){
+    //         player.angle = Math.PI * 1;
+    //         player.move(move_score);
+    //     }
+    //     if(movement.right){
+    //         player.angle = Math.PI * 0;
+    //         player.move(move_score);
+    //     }
+    //     if(movement.up){
+    //     }
+    //     if(movement.down){
+    //     }
+    // });
+
+    // // ### calculate ####
+    // let pieces = Object.assign({}, ccdm.blocks, ccdm.items);
+    // Object.values(pieces).forEach((piece)=>{
+    //     if(!piece.effect || !piece.touched){
+    //         return
+    //     }
+    //     if(piece.effect == 'coin'){
+    //         logger.debug(`is coin.`);
+    //         console.log(piece);
+    //         ccdm.players[piece.touched].menu.coin.v++;
+    //     }
+    //     if(piece.effect == 'mushroom'){
+    //         logger.debug(`is mushroom.`);
+    //         console.log(piece);
+    //         let param = {
+    //             x: piece.x,
+    //             y: piece.y - BLK,
+    //         }
+    //         let item = new mushroomItem(param);
+    //         ccdm.items[item.id] = item;
+    //     }
+    // });
+    // ### send after ####
+    // Object.values(ccdm.blocks).forEach((block)=>{
+    //     if(block.bounding && block.touched){
+    //         block.touched = null;
+    //     }
+    // });
+}
+
+let start_flg = false;
+
+const interval_game = () => {
+    start_flg = true;
+    main_frame();
+    draw_view();
+    menu_frame();
+}
+
+function gameStart(){
+    console.log(`gameStart`);
+    socket.emit('game-start', {
+        nickname: $("#nickname").val(),
+        userid: MY_USER_ID,
+    });
+}
+
+socket.on('new-player', function(param) {
+    console.log(`call new-player`);
+    $("#start-screen").hide();
+    my_player = new Player({
+        socketId: param.socketId,
+        nickname: param.nickname,
+        id: param.id,
+        END_POINT: param.END_POINT,
+        x: param.x,
+        y: param.y,
+    });
+    ccdm.players[my_player.id] = my_player;
+    if(!start_flg){
+        setInterval(interval_game, 1000/FPS);
+    }
+});
+// $("#start-button").on('click', gameStart);
+
+gameStart();
+
+$(document).on('keydown keyup', (event) => {
+    const KeyToCommand = {
+        'ArrowUp': 'up',
+        'ArrowDown': 'down',
+        'ArrowLeft': 'left',
+        'ArrowRight': 'right',
+    };
+    const command = KeyToCommand[event.key];
+    if(command){
+        if(event.type === 'keydown'){
+            movement[command] = true;
+        }else{ /* keyup */
+            movement[command] = false;
+        }
+        my_player.movement = movement;
+    }
+});
+
+socket.on('dead', () => {
+    $("#start-screen").show();
+});
