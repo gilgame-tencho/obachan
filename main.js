@@ -37,9 +37,7 @@ const CONF = {
 
 const GC = require('./common/gameClass.js');
 let tt = new GC.SAMPLE();
-// let tt = new GC.Sample();
-
-// const GM = require('./gameClass.js');
+const GM = new GC.GM();
 
 const logger = STANDERD.logger({
     server_name: SERVER_NAME,
