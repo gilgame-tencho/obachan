@@ -35,9 +35,9 @@ const CONF = {
     MAX_HEIGHT: MAX_HEIGHT,
 }
 
-const GC = require('./common/gameClass.js');
-let tt = new GC.SAMPLE();
-const GM = new GC.GM();
+const GM = require('./common/gameClass.js');
+// let tt = new GC.SAMPLE();
+// const GM = new GC.GM();
 
 const logger = STANDERD.logger({
     server_name: SERVER_NAME,
@@ -46,7 +46,7 @@ const logger = STANDERD.logger({
 });
 
 // init block. -----------------------------
-// const ccdm = GM.ccdm;
+const ccdm = new GM.CCDM();
 // const gameMtr = GM.gameMtr;
 
 // io.on('connection', function(socket) {
