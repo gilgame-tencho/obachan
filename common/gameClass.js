@@ -70,7 +70,7 @@ class CCDM extends ClientCommonDataManager{
         this.enemys = {};
         this.blocks = {};
         this.items = {};
-        // this.stage = new Stage();
+        this.stage = new Stage();
         this.goal = null;
         this.conf = {
             SERVER_NAME: SERVER_NAME,
@@ -485,6 +485,81 @@ class Enemy extends Player{
     }
 }
 
+
+class Stage extends GeneralObject{
+    constructor(obj={}){
+        super(obj);
+        this.no = obj.no;
+        // height max 14, width max 500
+        // height min 14, width min 16
+        // mark{ 'b':hardblock '.': nothing 'n':normalblock}
+        this.map = this.load_stage();
+        this.END_POINT = this.map.length * BLK;
+    }
+    def(){
+        let st = [];
+        for(let x=0; x<MAX_WIDTH; x++){
+            st.push([]);
+            for(let y=0; y<MAX_HEIGHT; y++){
+                if(y == MAX_HEIGHT - 1){
+                    st[x].push('b');
+                }else{
+                    st[x].push('.');
+                }
+            }
+        }
+        return st;
+    }
+    load_stage(){
+        return [];
+    }
+    toJSON(){
+        return Object.assign(super.toJSON(),{
+            no: this.no,
+            map: this.map,
+            END_POINT: this.END_POINT,
+        });
+    }
+}
+
+
+// ### ---
+class GameMaster{
+    constructor(){
+        this.create_stage();
+        logger.debug("game master.");
+        // console.log(ccdm.stage.load_stage());
+    }
+    create_stage(){
+        let x = 0;
+        let y = 0;
+        let goal_flg = false;
+        ccdm.stage.map.forEach((line)=>{
+            y = 0;
+            line.forEach((point)=>{
+                let param = {
+                    x: x * BLK,
+                    y: y * BLK,
+                };
+                if(point === 'b'){
+                    // let block = new hardBlock(param);
+                    // ccdm.blocks[block.id] = block;
+                }
+                if(point === 'n'){
+                    // let block = new normalBlock(param);
+                    // ccdm.blocks[block.id] = block;
+                }
+
+                y++;
+            });
+            x++;
+        });
+    }
+}
+
+const ccdm = new CCDM();
+const gameMtr = new GameMaster();
+
 class Sample {
     constructor(){
         console.log('Hello World!!Sample.');
@@ -497,7 +572,8 @@ class Sample {
 
 module.exports = {
     SAMPLE: Sample,
-    CCDM: CCDM,
     GM: GameObject,
     Player: Player,
+    ccdm: ccdm,
+    gameMtr: gameMtr,
 }

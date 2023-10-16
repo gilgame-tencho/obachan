@@ -46,7 +46,7 @@ const logger = STANDERD.logger({
 });
 
 // init block. -----------------------------
-const ccdm = new GM.CCDM();
+const ccdm = GM.ccdm;
 // const gameMtr = GM.gameMtr;
 
 // io.on('connection', function(socket) {
