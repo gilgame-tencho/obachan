@@ -1,0 +1,1 @@
+let tt = new Sample();

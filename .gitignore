@@ -132,3 +132,5 @@ dist
 ## lock
 package-lock.json
 
+## build src
+/static/common/*.js

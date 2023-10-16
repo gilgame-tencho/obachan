@@ -30,6 +30,14 @@ const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
 const MAX_WIDTH = FIELD_WIDTH / BLK;
 const CENTER = server_conf.CENTER;
 const CMD_HIS = 5;
+const CONF = {
+    MAX_WIDTH: MAX_WIDTH,
+    MAX_HEIGHT: MAX_HEIGHT,
+}
+
+const GC = require('./common/gameClass.js');
+let tt = new GC.SAMPLE();
+// let tt = new GC.Sample();
 
 // const GM = require('./gameClass.js');
 
@@ -75,6 +83,7 @@ const app_param = {
 app.get('/', (request, response) => {
     app_param.name = request.param('name');
     app_param.title = 'obachan';
+    app_param.conf = CONF;
     response.render(path.join(__dirname, '/static/index.ejs'), app_param);
 });
 
