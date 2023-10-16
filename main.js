@@ -35,11 +35,9 @@ const CONF = {
     MAX_HEIGHT: MAX_HEIGHT,
 }
 
-const GC = require('./common/gameClass.js');
-let tt = new GC.SAMPLE();
-// let tt = new GC.Sample();
-
-// const GM = require('./gameClass.js');
+const GM = require('./common/gameClass.js');
+// let tt = new GC.SAMPLE();
+// const GM = new GC.GM();
 
 const logger = STANDERD.logger({
     server_name: SERVER_NAME,
@@ -48,30 +46,30 @@ const logger = STANDERD.logger({
 });
 
 // init block. -----------------------------
-// const ccdm = GM.ccdm;
-// const gameMtr = GM.gameMtr;
+const ccdm = GM.ccdm;
+const gameMtr = GM.gameMtr;
 
-// io.on('connection', function(socket) {
-//     let player = null;
-//     socket.on('game-start', (config) => {
-//         console.log(`gameStart`);
-//         player = new GM.Player({
-//             socketId: socket.id,
-//             nickname: config.nickname,
-//             id: config.id,
-//             END_POINT: ccdm.stage.END_POINT,
-//             x: BLK * 2,
-//             y: FIELD_HEIGHT * 0.5,
-//         });
-//         ccdm.players[player.id] = player;
-//         io.sockets.emit('new-player', player);
-//     });
-//     socket.on('disconnect', () => {
-//         if(!player){return;}
-//         delete ccdm.players[player.id];
-//         player = null;
-//     });
-// });
+io.on('connection', function(socket) {
+    let player = null;
+    socket.on('game-start', (config) => {
+        console.log(`gameStart`);
+        player = new GM.Player({
+            socketId: socket.id,
+            nickname: config.nickname,
+            id: config.id,
+            END_POINT: ccdm.stage.END_POINT,
+            x: BLK * 2,
+            y: FIELD_HEIGHT * 0.5,
+        });
+        ccdm.players[player.id] = player;
+        io.sockets.emit('new-player', player);
+    });
+    socket.on('disconnect', () => {
+        if(!player){return;}
+        delete ccdm.players[player.id];
+        player = null;
+    });
+});
 
 // Server config. -----------
 app.use('/static', express.static(__dirname + '/static'));
