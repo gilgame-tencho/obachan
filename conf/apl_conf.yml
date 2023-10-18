@@ -1,7 +1,7 @@
 # View config
 FIELD_WIDTH: 256
 FIELD_HEIGHT: 240
-BLOCK: 16
+BLK: 16
 CENTER: 8
 
 # Game base config

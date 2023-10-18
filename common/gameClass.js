@@ -1,15 +1,31 @@
+const yaml = require('yaml');
+const fs = require('fs');
+console.log("Server Load gameClass.");
+const CONF = Object.assign(
+    yaml.parse(fs.readFileSync(__dirname + '/../conf/server_conf.yml', 'utf-8')),
+    yaml.parse(fs.readFileSync(__dirname + '/../conf/apl_conf.yml', 'utf-8')),
+);
+
+CONF.DEAD_LINE = CONF.FIELD_HEIGHT + CONF.BLK * 1;
+CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
+CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
+CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
+
+// **vvv** START_MARK
+
 console.log("Load gameClass");
 
-const SERVER_NAME = 'main';
-const FIELD_WIDTH = 256;
-const FIELD_HEIGHT = 240;
-const FPS = 60;
-const move_score = 10;
-const BLK = 16;
-const DEAD_LINE = FIELD_HEIGHT + BLK * 1;
-const DEAD_END = FIELD_HEIGHT + BLK * 3;
-const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
-const MAX_WIDTH = FIELD_WIDTH / BLK;
+// const SERVER_NAME = 'main';
+// const FIELD_WIDTH = 256;
+// const FIELD_HEIGHT = 240;
+// const FPS = 60;
+// const move_score = 10;
+// const BLK = 16;
+// const DEAD_LINE = FIELD_HEIGHT + BLK * 1;
+// const DEAD_END = FIELD_HEIGHT + BLK * 3;
+// const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
+// const MAX_WIDTH = FIELD_WIDTH / BLK;
+
 const CENTER = 8;
 const CMD_HIS = 5;
 
@@ -46,7 +62,7 @@ class loggerClass{
 }
 
 const logger = new loggerClass({
-    server_name: SERVER_NAME,
+    server_name: CONF.SERVER_NAME,
     log_level: 'debug',
     name: this.constructor.name,
 });
@@ -73,14 +89,14 @@ class CCDM extends ClientCommonDataManager{
         this.stage = new Stage();
         this.goal = null;
         this.conf = {
-            SERVER_NAME: SERVER_NAME,
-            FIELD_WIDTH: FIELD_WIDTH,
-            FIELD_HEIGHT: FIELD_HEIGHT,
-            FPS: FPS,
-            BLK: BLK,
-            MAX_HEIGHT: MAX_HEIGHT,
-            MAX_WIDTH: MAX_WIDTH,
-            CENTER: CENTER,
+            SERVER_NAME: CONF.SERVER_NAME,
+            FIELD_WIDTH: CONF.FIELD_WIDTH,
+            FIELD_HEIGHT: CONF.FIELD_HEIGHT,
+            FPS: CONF.FPS,
+            BLK: CONF.BLK,
+            MAX_HEIGHT: CONF.MAX_HEIGHT,
+            MAX_WIDTH: CONF.MAX_WIDTH,
+            CENTER: CONF.CENTER,
         };
     }
     toJSON(){
@@ -100,7 +116,7 @@ class OriginObject{
     constructor(obj={}){
         this.id = Math.floor(Math.random()*1000000000);
         this.logger = new loggerClass({
-            server_name: SERVER_NAME,
+            server_name: CONF.SERVER_NAME,
             log_level: 'debug',
             name: this.constructor.name,
         });
@@ -148,7 +164,7 @@ class GameObject extends PhysicsObject{
         super(obj);
         this.angle = obj.angle;
         this.direction = obj.direction;
-        this.END_POINT = obj.END_POINT ? obj.END_POINT : FIELD_WIDTH;
+        this.END_POINT = obj.END_POINT ? obj.END_POINT : CONF.FIELD_WIDTH;
     }
     collistion(oldX, oldY){
         let collision = false;
@@ -205,7 +221,7 @@ class GameObject extends PhysicsObject{
             this.x < 0 ||
             this.x + this.width >= this.END_POINT ||
             this.y < 0 ||
-            this.y + this.height >= DEAD_END
+            this.y + this.height >= CONF.DEAD_END
         )
     }
     toJSON(){
@@ -228,20 +244,20 @@ class Player extends GameObject{
         if(obj.id){ this.id = obj.id }
 
         this.menu = {
-            name:       { x: BLK*1, y: BLK*1, v:this.nickname },
-            score:      { x: BLK*1, y: BLK*2, v:0 },
+            name:       { x: CONF.BLK*1, y: CONF.BLK*1, v:this.nickname },
+            score:      { x: CONF.BLK*1, y: CONF.BLK*2, v:0 },
 
-            coin:       { x: BLK*5, y: BLK*2, v:0 },
-            stage_name: { x: BLK*9, y: BLK*1, v:"WORLD" },
-            stage_no:   { x: BLK*9, y: BLK*2, v:"1-1" },
-            time_title: { x: BLK*13, y: BLK*1, v:"TIME" },
-            time:       { x: BLK*13, y: BLK*2, v:300 },
+            coin:       { x: CONF.BLK*5, y: CONF.BLK*2, v:0 },
+            stage_name: { x: CONF.BLK*9, y: CONF.BLK*1, v:"WORLD" },
+            stage_no:   { x: CONF.BLK*9, y: CONF.BLK*2, v:"1-1" },
+            time_title: { x: CONF.BLK*13, y: CONF.BLK*1, v:"TIME" },
+            time:       { x: CONF.BLK*13, y: CONF.BLK*2, v:300 },
         }
 
         this.movement = {};
 
-        this.width = BLK;
-        this.height = BLK;
+        this.width = CONF.BLK;
+        this.height = CONF.BLK;
         this.angle = 0;
         this.direction = 'r';  // direction is right:r, left:l;
         this.jampping = 0;
@@ -260,20 +276,20 @@ class Player extends GameObject{
         // console.log(this.cmd_his);
         // movement
         if(command.forward){
-            this.move(server_conf.move_speed);
+            this.move(CONF.move_speed);
         }
         if(command.back){
-            this.move(-server_conf.move_speed);
+            this.move(-CONF.move_speed);
         }
         if(command.left){
             this.angle = Math.PI * 1;
             this.direction = 'l';
-            this.move(server_conf.move_speed);
+            this.move(CONF.move_speed);
         }
         if(command.right){
             this.angle = Math.PI * 0;
             this.direction = 'r';
-            this.move(server_conf.move_speed);
+            this.move(CONF.move_speed);
         }
         if(command.up){
         }
@@ -295,7 +311,7 @@ class Player extends GameObject{
         if(this.jampping > 0){
             this.hopping();
         }else{
-            this.fall(server_conf.fall_speed);
+            this.fall(CONF.fall_speed);
         }
 
         // command reflesh.
@@ -362,7 +378,7 @@ class Player extends GameObject{
     }
     isDead(){
         let dead_flg = false;
-        if(this.y > DEAD_LINE){
+        if(this.y > CONF.DEAD_LINE){
             dead_flg = true;
         }
 
@@ -378,25 +394,25 @@ class Player extends GameObject{
     jump(){
         if(this.jampping <= 0 && !this.flg_fly && this.jump_count == 0){
             this.flg_fly = true;
-            this.jampping = 2 * BLK;
+            this.jampping = 2 * CONF.BLK;
             this.jump_count = 1;
         }else if( this.jump_count == 1){
             this.jump_count = 2;
         }else if( this.jump_count == 2){
-            this.jampping += 1.5 * BLK;
+            this.jampping += 1.5 * CONF.BLK;
             this.jump_count = 3;
         }else if( this.jump_count == 3){
             this.jump_count = 4;
         }else if( this.jump_count == 4){
-            this.jampping += 1.5 * BLK;
+            this.jampping += 1.5 * CONF.BLK;
             this.jump_count = 5;
         }else{
             this.jump_count = 0;
         }
     }
     hopping(){
-        if(this.rise(server_conf.jamp_speed)){
-            this.jampping -= server_conf.jamp_speed;
+        if(this.rise(CONF.jamp_speed)){
+            this.jampping -= CONF.jamp_speed;
         }else{
             this.jampping = 0;
         }
@@ -417,8 +433,8 @@ class Player extends GameObject{
     }
     respone(){
         // delete ccdm.players[this.id];
-        this.x = BLK * 2;
-        this.y = FIELD_HEIGHT * 0.5;
+        this.x = CONF.BLK * 2;
+        this.y = CONF.FIELD_HEIGHT * 0.5;
         this.view_x = 0;
         this.dead_flg = false;
     }
@@ -449,7 +465,7 @@ class Enemy extends Player{
     self_move(){
         if(this.sleep){ return }
 
-        let speed = Math.floor(server_conf.move_speed / 3);
+        let speed = Math.floor(CONF.move_speed / 3);
         if(!this.move(speed)){
             if(this.direction == 'l'){
                 this.direction = 'r';
@@ -459,7 +475,7 @@ class Enemy extends Player{
                 this.angle = Math.PI * 1;
             }
         }
-        this.fall(server_conf.fall_speed);
+        this.fall(CONF.fall_speed);
     }
     move(distance){
 
@@ -494,14 +510,14 @@ class Stage extends GeneralObject{
         // height min 14, width min 16
         // mark{ 'b':hardblock '.': nothing 'n':normalblock}
         this.map = this.load_stage();
-        this.END_POINT = this.map.length * BLK;
+        this.END_POINT = this.map.length * CONF.BLK;
     }
     def(){
         let st = [];
-        for(let x=0; x<MAX_WIDTH; x++){
+        for(let x=0; x<CONF.MAX_WIDTH; x++){
             st.push([]);
-            for(let y=0; y<MAX_HEIGHT; y++){
-                if(y == MAX_HEIGHT - 1){
+            for(let y=0; y<CONF.MAX_HEIGHT; y++){
+                if(y == CONF.MAX_HEIGHT - 1){
                     st[x].push('b');
                 }else{
                     st[x].push('.');
@@ -538,8 +554,8 @@ class GameMaster{
             y = 0;
             line.forEach((point)=>{
                 let param = {
-                    x: x * BLK,
-                    y: y * BLK,
+                    x: x * CONF.BLK,
+                    y: y * CONF.BLK,
                 };
                 if(point === 'b'){
                     // let block = new hardBlock(param);
@@ -566,7 +582,7 @@ class Sample {
     }
 }
 
-// **vvv
+// **vvv** END_MARK
 // ## build cut static.
 // ## modules
 
@@ -574,6 +590,7 @@ module.exports = {
     SAMPLE: Sample,
     GM: GameObject,
     Player: Player,
+    CONF: CONF,
     ccdm: ccdm,
     gameMtr: gameMtr,
 }

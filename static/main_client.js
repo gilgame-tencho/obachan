@@ -14,8 +14,14 @@ let timer = 0;
 
 const images = {};
 images.player = {
-    r: $('#img-player-r')[0],
-    l: $('#img-player-l')[0],
+    r: $('#img-chara-wizard_l')[0],
+    l: $('#img-chara-wizard_r')[0],
+}
+images.map = {
+    standard: $('#img-map-standard')[0],
+}
+images.block = {
+    normal: $('#img-block-normal')[0],
 }
 
 let my_player;
@@ -105,7 +111,7 @@ const self_timer = () => {
 
     timer++;
 }
-setInterval(self_timer, 1000/FPS);
+setInterval(self_timer, 1000/CONF.FPS);
 
 // -- action param ---------
 const effects = {
@@ -173,13 +179,13 @@ const draw_view = function(){
 
 const main_frame = () => {
     // ### chain block ####
-    let front_view_x = FIELD_WIDTH;
+    let front_view_x = CONF.FIELD_WIDTH;
     Object.values(ccdm.players).forEach((player) => {
         // frame
         player.frame();
 
-        if(front_view_x < player.view_x + FIELD_WIDTH){
-            front_view_x = player.view_x + FIELD_WIDTH;
+        if(front_view_x < player.view_x + CONF.FIELD_WIDTH){
+            front_view_x = player.view_x + CONF.FIELD_WIDTH;
         }
     });
     // Object.values(ccdm.enemys).forEach((enemy)=>{
@@ -195,27 +201,27 @@ const main_frame = () => {
     //         }
     //     });
     // });
-    // Object.values(ccdm.players).forEach((player) => {
-    //     const movement = player.movement;
-    //     if(movement.forward){
-    //         player.move(move_score);
-    //     }
-    //     if(movement.back){
-    //         player.move(-move_score);
-    //     }
-    //     if(movement.left){
-    //         player.angle = Math.PI * 1;
-    //         player.move(move_score);
-    //     }
-    //     if(movement.right){
-    //         player.angle = Math.PI * 0;
-    //         player.move(move_score);
-    //     }
-    //     if(movement.up){
-    //     }
-    //     if(movement.down){
-    //     }
-    // });
+    Object.values(ccdm.players).forEach((player) => {
+        const movement = player.movement;
+        if(movement.forward){
+            player.move(move_score);
+        }
+        if(movement.back){
+            player.move(-move_score);
+        }
+        if(movement.left){
+            player.angle = Math.PI * 1;
+            player.move(move_score);
+        }
+        if(movement.right){
+            player.angle = Math.PI * 0;
+            player.move(move_score);
+        }
+        if(movement.up){
+        }
+        if(movement.down){
+        }
+    });
 
     // // ### calculate ####
     // let pieces = Object.assign({}, ccdm.blocks, ccdm.items);
@@ -277,7 +283,7 @@ socket.on('new-player', function(param) {
     });
     ccdm.players[my_player.id] = my_player;
     if(!start_flg){
-        setInterval(interval_game, 1000/FPS);
+        setInterval(interval_game, 1000/CONF.FPS);
     }
 });
 // $("#start-button").on('click', gameStart);
