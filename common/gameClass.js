@@ -15,20 +15,6 @@ CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 
 console.log("Load gameClass");
 
-// const SERVER_NAME = 'main';
-// const FIELD_WIDTH = 256;
-// const FIELD_HEIGHT = 240;
-// const FPS = 60;
-// const move_score = 10;
-// const BLK = 16;
-// const DEAD_LINE = FIELD_HEIGHT + BLK * 1;
-// const DEAD_END = FIELD_HEIGHT + BLK * 3;
-// const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
-// const MAX_WIDTH = FIELD_WIDTH / BLK;
-
-const CENTER = 8;
-const CMD_HIS = 5;
-
 class loggerClass{
     constructor(obj={}){
       this.server_name = obj.server_name;
@@ -264,7 +250,7 @@ class Player extends GameObject{
         this.jump_count = 0;
         this.flg_fly = true;
         this.cmd_his = []; //command history. FIFO.
-        for(let i=0; i<CMD_HIS; i++){
+        for(let i=0; i<CONF.CMD_HIS; i++){
             this.cmd_his.push({});
         }
     }
@@ -316,7 +302,7 @@ class Player extends GameObject{
 
         // command reflesh.
         this.cmd_his.push(command);
-        if(this.cmd_his.length > CMD_HIS){
+        if(this.cmd_his.length > CONF.CMD_HIS){
             this.cmd_his.shift();
         }
     }
@@ -342,7 +328,7 @@ class Player extends GameObject{
         let range = distance * this.speed;
         let dis_x = range * Math.cos(this.angle);
         let dis_y = range * Math.sin(this.angle);
-        if(this.x + dis_x <= this.view_x + CENTER){
+        if(this.x + dis_x <= this.view_x + CONF.CENTER){
             this.x += dis_x;
             this.y += dis_y;
         }else{
