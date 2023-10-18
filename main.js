@@ -14,34 +14,33 @@ const yaml = require('yaml');
 const STANDERD = require('./game_modules/standerd_modules.js');
 // const DB = require('./game_modules/database_modules.js');
 
-const server_conf = Object.assign(
-    yaml.parse(fs.readFileSync(__dirname + '/conf/server_conf.yml', 'utf-8')),
-    yaml.parse(fs.readFileSync(__dirname + '/conf/apl_conf.yml', 'utf-8')),
-);
+// const CONF = Object.assign(
+//     yaml.parse(fs.readFileSync(__dirname + '/conf/server_conf.yml', 'utf-8')),
+//     yaml.parse(fs.readFileSync(__dirname + '/conf/apl_conf.yml', 'utf-8')),
+// );
 
-const SERVER_NAME = 'main';
-const FIELD_WIDTH = server_conf.FIELD_WIDTH;
-const FIELD_HEIGHT = server_conf.FIELD_HEIGHT;
-const FPS = server_conf.FPS;
-const BLK = server_conf.BLOCK;
-const DEAD_LINE = FIELD_HEIGHT + BLK * 1;
-const DEAD_END = FIELD_HEIGHT + BLK * 3;
-const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
-const MAX_WIDTH = FIELD_WIDTH / BLK;
-const CENTER = server_conf.CENTER;
-const CMD_HIS = 5;
-const CONF = {
-    MAX_WIDTH: MAX_WIDTH,
-    MAX_HEIGHT: MAX_HEIGHT,
-}
+// const SERVER_NAME = CONF.SERVER_NAME;
+// const FIELD_WIDTH = CONF.FIELD_WIDTH;
+// const FIELD_HEIGHT = CONF.FIELD_HEIGHT;
+// const FPS = CONF.FPS;
+// const BLK = CONF.BLOCK;
+// const DEAD_LINE = CONF.FIELD_HEIGHT + CONF.BLK * 1;
+// const DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
+// const MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
+// const MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
+// CONF.DEAD_LINE = CONF.FIELD_HEIGHT + CONF.BLK * 1;
+// CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
+// CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
+// CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 
 const GM = require('./common/gameClass.js');
+const CONF = GM.CONF;
 // let tt = new GC.SAMPLE();
 // const GM = new GC.GM();
 
 const logger = STANDERD.logger({
-    server_name: SERVER_NAME,
-    log_level: server_conf.loglevel,
+    server_name: CONF.SERVER_NAME,
+    log_level: CONF.loglevel,
     name: this.constructor.name,
 });
 
@@ -58,8 +57,8 @@ io.on('connection', function(socket) {
             nickname: config.nickname,
             id: config.id,
             END_POINT: ccdm.stage.END_POINT,
-            x: BLK * 2,
-            y: FIELD_HEIGHT * 0.5,
+            x: CONF.BLK * 2,
+            y: CONF.FIELD_HEIGHT * 0.5,
         });
         ccdm.players[player.id] = player;
         io.sockets.emit('new-player', player);
@@ -76,8 +75,8 @@ io.on('connection', function(socket) {
 app.use('/static', express.static(__dirname + '/static'));
 
 const app_param = {
-    FIELD_HEIGHT: server_conf.FIELD_HEIGHT,
-    FIELD_WIDTH: server_conf.FIELD_WIDTH,
+    FIELD_HEIGHT: CONF.FIELD_HEIGHT,
+    FIELD_WIDTH: CONF.FIELD_WIDTH,
 }
 app.get('/', (request, response) => {
     app_param.name = request.param('name');
@@ -86,8 +85,8 @@ app.get('/', (request, response) => {
     response.render(path.join(__dirname, '/static/index.ejs'), app_param);
 });
 
-server.listen(server_conf.port, function() {
-  logger.info(`Starting server on port ${server_conf.port}`);
+server.listen(CONF.port, function() {
+  logger.info(`Starting server on port ${CONF.port}`);
   logger.info(`Server conf`);
-  console.log(server_conf);
+  console.log(CONF);
 });

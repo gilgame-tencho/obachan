@@ -1,4 +1,6 @@
 # Server config
+SERVER_NAME: main
+
 port: 3000
 apl_db: 3001
 
