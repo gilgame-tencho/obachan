@@ -11,6 +11,17 @@ CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
 CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
 CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 
+// File access is there. ====
+
+// function local_load_stage(){
+//     let stage = fs.readFileSync(__dirname + '/../conf/stages/s1.txt', 'utf-8');
+//     let lines = stage.split("\r\n");
+//     let st = [];
+// }
+
+// CONF.STAGE = [];
+
+
 // **vvv** START_MARK
 
 console.log("Load gameClass");
@@ -513,7 +524,7 @@ class Stage extends GeneralObject{
         return st;
     }
     load_stage(){
-        return [];
+        return this.def();
     }
     toJSON(){
         return Object.assign(super.toJSON(),{
@@ -524,15 +535,82 @@ class Stage extends GeneralObject{
     }
 }
 
+class commonBlock extends PhysicsObject{
+    constructor(obj={}){
+        super(obj);
+        this.attr = "Block";
+        this.type = obj.type;
+        this.height = CONF.BLK * 1;
+        this.width = CONF.BLK;
+        this.touched = null;
+        this.bounding = false;
+        this.effect = false;
+        this.event = false;
+    }
+    toJSON(){
+        return Object.assign(super.toJSON(),{
+            type: this.type,
+            attr: this.attr,
+            touched: this.touched,
+            bounding: this.bounding,
+            effect: this.effect,
+            event: this.event,
+        });
+    }
+}
+class hardBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        // this.type = "hard";
+        this.type = "normal";
+        this.height = CONF.BLK * 2;
+    }
+}
+class normalBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "normal";
+        this.bounding = true;
+    }
+}
+class hatenaBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "hatena";
+        this.bounding = true;
+        this.effect = obj.effenct ? obj.effect : 'coin';
+    }
+}
+class goalBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "goal";
+        this.height = CONF.BLK * 1;
+        this.top = 1;
+        this.flag = 1;
+        this.pole = 9;
+        this.block = 1;
+    }
+    toJSON(){
+        return Object.assign(super.toJSON(), {
+            top: this.top,
+            flag: this.flag,
+            pole: this.pole,
+            block: this.block,
+        });
+    }
+}
+
+const ccdm = new CCDM();
 
 // ### ---
 class GameMaster{
     constructor(){
-        this.create_stage();
+        this.create_stage(ccdm);
         logger.debug("game master.");
         // console.log(ccdm.stage.load_stage());
     }
-    create_stage(){
+    create_stage(ccdm){
         let x = 0;
         let y = 0;
         let goal_flg = false;
@@ -544,12 +622,12 @@ class GameMaster{
                     y: y * CONF.BLK,
                 };
                 if(point === 'b'){
-                    // let block = new hardBlock(param);
-                    // ccdm.blocks[block.id] = block;
+                    let block = new hardBlock(param);
+                    ccdm.blocks[block.id] = block;
                 }
                 if(point === 'n'){
-                    // let block = new normalBlock(param);
-                    // ccdm.blocks[block.id] = block;
+                    let block = new normalBlock(param);
+                    ccdm.blocks[block.id] = block;
                 }
 
                 y++;
@@ -559,7 +637,6 @@ class GameMaster{
     }
 }
 
-const ccdm = new CCDM();
 const gameMtr = new GameMaster();
 
 class Sample {
