@@ -14,29 +14,8 @@ const yaml = require('yaml');
 const STANDERD = require('./game_modules/standerd_modules.js');
 // const DB = require('./game_modules/database_modules.js');
 
-// const CONF = Object.assign(
-//     yaml.parse(fs.readFileSync(__dirname + '/conf/server_conf.yml', 'utf-8')),
-//     yaml.parse(fs.readFileSync(__dirname + '/conf/apl_conf.yml', 'utf-8')),
-// );
-
-// const SERVER_NAME = CONF.SERVER_NAME;
-// const FIELD_WIDTH = CONF.FIELD_WIDTH;
-// const FIELD_HEIGHT = CONF.FIELD_HEIGHT;
-// const FPS = CONF.FPS;
-// const BLK = CONF.BLOCK;
-// const DEAD_LINE = CONF.FIELD_HEIGHT + CONF.BLK * 1;
-// const DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
-// const MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
-// const MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
-// CONF.DEAD_LINE = CONF.FIELD_HEIGHT + CONF.BLK * 1;
-// CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
-// CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
-// CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
-
 const GM = require('./common/gameClass.js');
 const CONF = GM.CONF;
-// let tt = new GC.SAMPLE();
-// const GM = new GC.GM();
 
 const logger = STANDERD.logger({
     server_name: CONF.SERVER_NAME,

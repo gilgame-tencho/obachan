@@ -11,23 +11,20 @@ CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
 CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
 CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 
+// File access is there. ====
+
+// function local_load_stage(){
+//     let stage = fs.readFileSync(__dirname + '/../conf/stages/s1.txt', 'utf-8');
+//     let lines = stage.split("\r\n");
+//     let st = [];
+// }
+
+// CONF.STAGE = [];
+
+
 // **vvv** START_MARK
 
 console.log("Load gameClass");
-
-// const SERVER_NAME = 'main';
-// const FIELD_WIDTH = 256;
-// const FIELD_HEIGHT = 240;
-// const FPS = 60;
-// const move_score = 10;
-// const BLK = 16;
-// const DEAD_LINE = FIELD_HEIGHT + BLK * 1;
-// const DEAD_END = FIELD_HEIGHT + BLK * 3;
-// const MAX_HEIGHT = FIELD_HEIGHT / BLK - 1;
-// const MAX_WIDTH = FIELD_WIDTH / BLK;
-
-const CENTER = 8;
-const CMD_HIS = 5;
 
 class loggerClass{
     constructor(obj={}){
@@ -264,7 +261,7 @@ class Player extends GameObject{
         this.jump_count = 0;
         this.flg_fly = true;
         this.cmd_his = []; //command history. FIFO.
-        for(let i=0; i<CMD_HIS; i++){
+        for(let i=0; i<CONF.CMD_HIS; i++){
             this.cmd_his.push({});
         }
     }
@@ -316,7 +313,7 @@ class Player extends GameObject{
 
         // command reflesh.
         this.cmd_his.push(command);
-        if(this.cmd_his.length > CMD_HIS){
+        if(this.cmd_his.length > CONF.CMD_HIS){
             this.cmd_his.shift();
         }
     }
@@ -342,7 +339,7 @@ class Player extends GameObject{
         let range = distance * this.speed;
         let dis_x = range * Math.cos(this.angle);
         let dis_y = range * Math.sin(this.angle);
-        if(this.x + dis_x <= this.view_x + CENTER){
+        if(this.x + dis_x <= this.view_x + CONF.CENTER){
             this.x += dis_x;
             this.y += dis_y;
         }else{
@@ -527,7 +524,7 @@ class Stage extends GeneralObject{
         return st;
     }
     load_stage(){
-        return [];
+        return this.def();
     }
     toJSON(){
         return Object.assign(super.toJSON(),{
@@ -538,15 +535,82 @@ class Stage extends GeneralObject{
     }
 }
 
+class commonBlock extends PhysicsObject{
+    constructor(obj={}){
+        super(obj);
+        this.attr = "Block";
+        this.type = obj.type;
+        this.height = CONF.BLK * 1;
+        this.width = CONF.BLK;
+        this.touched = null;
+        this.bounding = false;
+        this.effect = false;
+        this.event = false;
+    }
+    toJSON(){
+        return Object.assign(super.toJSON(),{
+            type: this.type,
+            attr: this.attr,
+            touched: this.touched,
+            bounding: this.bounding,
+            effect: this.effect,
+            event: this.event,
+        });
+    }
+}
+class hardBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        // this.type = "hard";
+        this.type = "normal";
+        this.height = CONF.BLK * 2;
+    }
+}
+class normalBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "normal";
+        this.bounding = true;
+    }
+}
+class hatenaBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "hatena";
+        this.bounding = true;
+        this.effect = obj.effenct ? obj.effect : 'coin';
+    }
+}
+class goalBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        this.type = "goal";
+        this.height = CONF.BLK * 1;
+        this.top = 1;
+        this.flag = 1;
+        this.pole = 9;
+        this.block = 1;
+    }
+    toJSON(){
+        return Object.assign(super.toJSON(), {
+            top: this.top,
+            flag: this.flag,
+            pole: this.pole,
+            block: this.block,
+        });
+    }
+}
+
+const ccdm = new CCDM();
 
 // ### ---
 class GameMaster{
     constructor(){
-        this.create_stage();
+        this.create_stage(ccdm);
         logger.debug("game master.");
         // console.log(ccdm.stage.load_stage());
     }
-    create_stage(){
+    create_stage(ccdm){
         let x = 0;
         let y = 0;
         let goal_flg = false;
@@ -558,12 +622,12 @@ class GameMaster{
                     y: y * CONF.BLK,
                 };
                 if(point === 'b'){
-                    // let block = new hardBlock(param);
-                    // ccdm.blocks[block.id] = block;
+                    let block = new hardBlock(param);
+                    ccdm.blocks[block.id] = block;
                 }
                 if(point === 'n'){
-                    // let block = new normalBlock(param);
-                    // ccdm.blocks[block.id] = block;
+                    let block = new normalBlock(param);
+                    ccdm.blocks[block.id] = block;
                 }
 
                 y++;
@@ -573,7 +637,6 @@ class GameMaster{
     }
 }
 
-const ccdm = new CCDM();
 const gameMtr = new GameMaster();
 
 class Sample {

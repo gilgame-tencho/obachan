@@ -5,9 +5,11 @@ BLK: 16
 CENTER: 8
 
 # Game base config
-FPS: 30
+FPS: 20
 move_speed: 4
 fall_speed: 8
 jamp_speed: 8
 jamp_power: 5
 
+# Game System param
+CMD_HIS: 5

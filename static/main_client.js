@@ -14,13 +14,13 @@ let timer = 0;
 
 const images = {};
 images.player = {
-    r: $('#img-chara-wizard_l')[0],
-    l: $('#img-chara-wizard_r')[0],
+    r: $('#img-chara-wizard_r')[0],
+    l: $('#img-chara-wizard_l')[0],
 }
 images.map = {
     standard: $('#img-map-standard')[0],
 }
-images.block = {
+images.piece = {
     normal: $('#img-block-normal')[0],
 }
 
@@ -84,41 +84,6 @@ function is_draw(obj, MARGIN, FIELD_WIDTH){
 // init -----
 view_reset_all();
 
-// -- timer --------
-socket.on('timer_sync', function(param) {
-    console.log(`this.timer: ${timer},\tserver.timer:${param.timer}. timer is reset.`);
-    timer = 0;
-});
-const self_timer = () => {
-    // animation --------------------
-    // // hatena
-    // let hatena = ['hatena_f1', 'hatena_f2', 'hatena_f3', 'hatena_f4', 'hatena_f3', 'hatena_f2',];
-    // let frame = 5;
-    // let i = Math.floor(timer / frame) % hatena.length;
-    // // console.log(`[self_timer] t:${timer}, i:${hatena[i]}`);
-    // images.piece.hatena = images.piece[hatena[i]];
-
-    // // coin
-    // let coin = [
-    //     'yoko',
-    //     'c45w',
-    //     'front',
-    //     'c45u',
-    // ];
-    // frame = 2;
-    // i = Math.floor(timer / frame) % coin.length;
-    // // images.effect.anime = images.effect.anime[coin[i]];
-
-    timer++;
-}
-setInterval(self_timer, 1000/CONF.FPS);
-
-// -- action param ---------
-const effects = {
-    bounding: {},
-    coin: {},
-};
-
 // -- server action --------
 socket.on('back-frame', function() {
     view_reset_background();
@@ -155,6 +120,22 @@ const draw_view = function(){
         VIEW_X = ccdm.players[MY_USER_ID].view_x;
     }
 
+    let pieces = {};
+    Object.assign(pieces, ccdm.blocks);
+    // Object.assign(pieces, ccdm.items);
+    // Object.assign(pieces, ccdm.enemys);
+
+    Object.values(pieces).forEach((piece) => {
+        let param = {
+            x: piece.x - VIEW_X,
+            y: piece.y,
+            width: piece.width,
+            height: piece.height,
+        }
+        if(is_draw(param, MARGIN, ccdm.conf.FIELD_WIDTH)){
+            drawImage(cotxMD, images.piece[piece.type], param);
+        }
+    });
     Object.values(ccdm.players).forEach((player) => {
         let img = images.player[player.direction];
         let param = {
@@ -201,54 +182,25 @@ const main_frame = () => {
     //         }
     //     });
     // });
-    Object.values(ccdm.players).forEach((player) => {
-        const movement = player.movement;
-        if(movement.forward){
-            player.move(move_score);
-        }
-        if(movement.back){
-            player.move(-move_score);
-        }
-        if(movement.left){
-            player.angle = Math.PI * 1;
-            player.move(move_score);
-        }
-        if(movement.right){
-            player.angle = Math.PI * 0;
-            player.move(move_score);
-        }
-        if(movement.up){
-        }
-        if(movement.down){
-        }
-    });
-
-    // // ### calculate ####
-    // let pieces = Object.assign({}, ccdm.blocks, ccdm.items);
-    // Object.values(pieces).forEach((piece)=>{
-    //     if(!piece.effect || !piece.touched){
-    //         return
+    // Object.values(ccdm.players).forEach((player) => {
+    //     const movement = player.movement;
+    //     if(movement.forward){
+    //         player.move(move_score);
     //     }
-    //     if(piece.effect == 'coin'){
-    //         logger.debug(`is coin.`);
-    //         console.log(piece);
-    //         ccdm.players[piece.touched].menu.coin.v++;
+    //     if(movement.back){
+    //         player.move(-move_score);
     //     }
-    //     if(piece.effect == 'mushroom'){
-    //         logger.debug(`is mushroom.`);
-    //         console.log(piece);
-    //         let param = {
-    //             x: piece.x,
-    //             y: piece.y - BLK,
-    //         }
-    //         let item = new mushroomItem(param);
-    //         ccdm.items[item.id] = item;
+    //     if(movement.left){
+    //         player.angle = Math.PI * 1;
+    //         player.move(move_score);
     //     }
-    // });
-    // ### send after ####
-    // Object.values(ccdm.blocks).forEach((block)=>{
-    //     if(block.bounding && block.touched){
-    //         block.touched = null;
+    //     if(movement.right){
+    //         player.angle = Math.PI * 0;
+    //         player.move(move_score);
+    //     }
+    //     if(movement.up){
+    //     }
+    //     if(movement.down){
     //     }
     // });
 }
