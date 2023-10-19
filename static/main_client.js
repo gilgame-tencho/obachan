@@ -246,8 +246,9 @@ $(document).on('keydown keyup', (event) => {
     const KeyToCommand = {
         'ArrowUp': 'up',
         'ArrowDown': 'down',
-        'ArrowLeft': 'left',
-        'ArrowRight': 'right',
+        // 'ArrowLeft': 'left',
+        // 'ArrowRight': 'right',
+        ' ': 'jump',
     };
     const command = KeyToCommand[event.key];
     if(command){

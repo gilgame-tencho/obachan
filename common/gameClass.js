@@ -264,6 +264,7 @@ class Player extends GameObject{
         for(let i=0; i<CONF.CMD_HIS; i++){
             this.cmd_his.push({});
         }
+        this.auto_move = true;
     }
     command(param){
         this.movement = param;
@@ -315,6 +316,12 @@ class Player extends GameObject{
         this.cmd_his.push(command);
         if(this.cmd_his.length > CONF.CMD_HIS){
             this.cmd_his.shift();
+        }
+
+        if(this.auto_move){
+            this.angle = Math.PI * 0;
+            this.direction = 'r';
+            this.move(CONF.move_speed);
         }
     }
     collistion(oldX, oldY, oldViewX=this.view_x){
