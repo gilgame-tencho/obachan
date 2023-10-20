@@ -169,8 +169,8 @@ const main_frame = () => {
             front_view_x = player.view_x + CONF.FIELD_WIDTH;
         }
     });
-    console.log(`debug: my_player[ view_x, x, y ]: [${my_player.view_x}\t${my_player.x}\t${my_player.y}]`);
-    console.log(`debug: front_view_x: ${front_view_x}`);
+    // console.log(`debug: my_player[ view_x, x, y ]: [${my_player.view_x}\t${my_player.x}\t${my_player.y}]`);
+    // console.log(`debug: front_view_x: ${front_view_x}`);
 }
 
 let start_flg = false;

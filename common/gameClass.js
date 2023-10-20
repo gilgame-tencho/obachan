@@ -216,6 +216,7 @@ class GameObject extends PhysicsObject{
         return Object.assign(super.toJSON(), {
             angle: this.angle,
             direction: this.direction,
+            END_POINT: this.END_POINT,
         });
     }
 }
@@ -256,6 +257,9 @@ class Player extends GameObject{
             this.cmd_his.push({});
         }
         this.auto_move = true;
+        this.debug_info = {
+            collistion: '',
+        };
     }
     command(param){
         this.movement = param;
@@ -319,13 +323,17 @@ class Player extends GameObject{
         let collision = false;
         if(this.intersectField()){
                 collision = true;
+                this.debug_info.collistion = 'intersectField';
         }
         if(this.intersectBlock(oldX, oldY)){
             collision = true;
+            this.debug_info.collistion = 'intersectBlock';
         }
         if(collision){
             this.x = oldX; this.y = oldY;
             this.view_x = oldViewX;
+        }else{
+            this.debug_info.collistion = '';
         }
         return collision;
     }
