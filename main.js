@@ -25,7 +25,7 @@ const logger = STANDERD.logger({
 
 // init block. -----------------------------
 const ccdm = GM.ccdm;
-const gameMtr = GM.gameMtr;
+// const gameMtr = GM.gameMtr;
 
 io.on('connection', function(socket) {
     let player = null;

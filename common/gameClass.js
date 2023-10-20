@@ -85,16 +85,7 @@ class CCDM extends ClientCommonDataManager{
         this.items = {};
         this.stage = new Stage();
         this.goal = null;
-        this.conf = {
-            SERVER_NAME: CONF.SERVER_NAME,
-            FIELD_WIDTH: CONF.FIELD_WIDTH,
-            FIELD_HEIGHT: CONF.FIELD_HEIGHT,
-            FPS: CONF.FPS,
-            BLK: CONF.BLK,
-            MAX_HEIGHT: CONF.MAX_HEIGHT,
-            MAX_WIDTH: CONF.MAX_WIDTH,
-            CENTER: CONF.CENTER,
-        };
+        this.conf = CONF;
     }
     toJSON(){
         return Object.assign(super.toJSON(), {
@@ -518,11 +509,15 @@ class Stage extends GeneralObject{
     }
     def(){
         let st = [];
-        for(let x=0; x<CONF.MAX_WIDTH; x++){
+        for(let x=0; x<CONF.MAX_WIDTH*2; x++){
             st.push([]);
             for(let y=0; y<CONF.MAX_HEIGHT; y++){
                 if(y == CONF.MAX_HEIGHT - 1){
-                    st[x].push('b');
+                    if(x % 5 == 0){
+                        st[x].push('n');
+                    }else{
+                        st[x].push('b');
+                    }
                 }else{
                     st[x].push('.');
                 }
@@ -569,7 +564,7 @@ class hardBlock extends commonBlock{
     constructor(obj={}){
         super(obj);
         // this.type = "hard";
-        this.type = "normal";
+        this.type = "hard";
         this.height = CONF.BLK * 2;
     }
 }
@@ -645,12 +640,6 @@ class GameMaster{
 }
 
 const gameMtr = new GameMaster();
-
-class Sample {
-    constructor(){
-        console.log('Hello World!!Sample.');
-    }
-}
 
 // **vvv** END_MARK
 // ## build cut static.
