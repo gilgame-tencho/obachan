@@ -391,7 +391,7 @@ class Player extends GameObject{
 
         if(dead_flg){
             this.dead_flg = true;
-            this.respone();
+            // this.respone();
         }
     }
     fall(distance){

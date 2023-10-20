@@ -43,6 +43,16 @@ io.on('connection', function(socket) {
         io.sockets.emit('new-player', player);
         logger.log(`start plyaer: ${player.nickname}`);
     });
+    socket.on('state', (config) => {
+        if(!player){return;}
+        let send_player = config;
+        if(send_player.dead_flg){
+            logger.log(`player is dead: ${send_player.id} ${send_player.nickname}`);
+            delete ccdm.players[player.id];
+            player = null;
+            io.sockets.emit('dead');
+        }
+    });
     socket.on('disconnect', () => {
         if(!player){return;}
         delete ccdm.players[player.id];
