@@ -35,7 +35,7 @@ io.on('connection', function(socket) {
             socketId: socket.id,
             nickname: config.nickname,
             id: config.id,
-            END_POINT: ccdm.stage.END_POINT,
+            END_POINT: ccdm.stage.END_POINT,    //??
             x: CONF.BLK * 2,
             y: CONF.FIELD_HEIGHT * 0.5,
         });

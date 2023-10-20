@@ -501,19 +501,21 @@ class Stage extends GeneralObject{
     constructor(obj={}){
         super(obj);
         this.no = obj.no;
-        // height max 14, width max 500
-        // height min 14, width min 16
-        // mark{ 'b':hardblock '.': nothing 'n':normalblock}
+        // ### Explanation. ###
+        // # height max 14, width max 500
+        // # height min 14, width min 16
+        // # mark{ 'b':hardblock '.': nothing 'n':normalblock}
+        // ###
         this.map = this.load_stage();
         this.END_POINT = this.map.length * CONF.BLK;
     }
     def(){
         let st = [];
-        for(let x=0; x<CONF.MAX_WIDTH*2; x++){
+        for(let x=0; x<CONF.MAX_WIDTH*30; x++){
             st.push([]);
             for(let y=0; y<CONF.MAX_HEIGHT; y++){
                 if(y == CONF.MAX_HEIGHT - 1){
-                    if(x % 5 == 0){
+                    if(x % CONF.MAX_WIDTH == 0){
                         st[x].push('n');
                     }else{
                         st[x].push('b');
@@ -646,7 +648,6 @@ const gameMtr = new GameMaster();
 // ## modules
 
 module.exports = {
-    SAMPLE: Sample,
     GM: GameObject,
     Player: Player,
     CONF: CONF,
