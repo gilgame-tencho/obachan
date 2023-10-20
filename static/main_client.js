@@ -174,12 +174,14 @@ const main_frame = () => {
 }
 
 let start_flg = false;
+let game_timer = null;
 
 const interval_game = () => {
     start_flg = true;
     main_frame();
     draw_view();
     menu_frame();
+    socket.emit('state', my_player);
 }
 
 function gameStart(){
@@ -193,13 +195,17 @@ function gameStart(){
 socket.on('new-player', function(player) {
     console.log(`call new-player`);
     $("#start-screen").hide();
-    my_player = new Player(player);
-    ccdm.players[my_player.id] = my_player;
+    if(!my_player){
+        my_player = new Player(player);
+        ccdm.players[my_player.id] = my_player;
+    }else{
+        my_player.respone();
+    }
     if(!start_flg){
-        setInterval(interval_game, 1000/CONF.FPS);
+        game_timer = setInterval(interval_game, 1000/CONF.FPS);
     }
 });
-// $("#start-button").on('click', gameStart);
+$("#start-button").on('click', gameStart);
 
 gameStart();
 
@@ -223,5 +229,7 @@ $(document).on('keydown keyup', (event) => {
 });
 
 socket.on('dead', () => {
+    clearInterval(game_timer);
+    start_flg = false;
     $("#start-screen").show();
 });
