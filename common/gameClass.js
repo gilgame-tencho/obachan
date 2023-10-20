@@ -64,6 +64,10 @@ const logger = new loggerClass({
     name: this.constructor.name,
 });
 
+function random(range){
+    return Math.round(Math.random() * range * 10, 0) % range;
+}
+
 // ## Defind Class. -----###
 
 class ClientCommonDataManager{
@@ -525,6 +529,8 @@ class Stage extends GeneralObject{
                 if(y == CONF.MAX_HEIGHT - 1){
                     if(x % CONF.MAX_WIDTH == 0){
                         st[x].push('n');
+                    }else if(random(3) == 1){
+                        st[x].push('.');
                     }else{
                         st[x].push('b');
                     }
