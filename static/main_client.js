@@ -1,7 +1,5 @@
 'use strict';
 
-let tt = new Sample();
-
 const socket = io();
 const canvFT = $('#canvas-front')[0];
 const cotxFT = canvFT.getContext('2d');
@@ -78,8 +76,8 @@ function debug_show_object_line(cotx, obj){
     cotx.restore();
 }
 
-function is_draw(obj, MARGIN, FIELD_WIDTH){
-    return (-MARGIN < obj.x && obj.x < FIELD_WIDTH + MARGIN)
+function is_draw(obj, margin, field_width){
+    return (-margin < obj.x && obj.x < field_width + margin)
 }
 
 // init -----
@@ -95,9 +93,9 @@ socket.on('menu-frame', function() {
 
 const menu_frame = () => {
     view_reset_front();
-    if(!ccdm.players[MY_USER_ID]){ return }
+    if(!my_player){ return }
 
-    const mymenu = ccdm.players[MY_USER_ID].menu;
+    const mymenu = my_player.menu;
     cotxFT.save();
     cotxFT.lineWidth = 3;
     cotxFT.strokeStyle = "#000000";
@@ -115,10 +113,10 @@ const menu_frame = () => {
 // socket.on('state', function(ccdm) {
 const draw_view = function(){
     view_reset_middle();
-    const MARGIN = ccdm.conf.BLK * 3;
+    const MARGIN = CONF.BLK * 3;
     let VIEW_X = 0;
-    if(ccdm.players[MY_USER_ID]){
-        VIEW_X = ccdm.players[MY_USER_ID].view_x;
+    if(my_player){
+        VIEW_X = my_player.view_x;
     }
 
     let pieces = {};
@@ -133,7 +131,7 @@ const draw_view = function(){
             width: piece.width,
             height: piece.height,
         }
-        if(is_draw(param, MARGIN, ccdm.conf.FIELD_WIDTH)){
+        if(is_draw(param, MARGIN, CONF.FIELD_WIDTH)){
             drawImage(cotxMD, images.piece[piece.type], param);
         }
     });
@@ -145,7 +143,7 @@ const draw_view = function(){
             width: player.width,
             height: player.height,
         }
-        if(is_draw(param, MARGIN, ccdm.conf.FIELD_WIDTH)){
+        if(is_draw(param, MARGIN, CONF.FIELD_WIDTH)){
             drawImage(cotxMD, img, param);
             // debug_show_object_line(cotxMD, player);
 
@@ -159,9 +157,10 @@ const draw_view = function(){
     });
 }
 
+let front_view_x = CONF.FIELD_WIDTH;
+
 const main_frame = () => {
     // ### chain block ####
-    let front_view_x = CONF.FIELD_WIDTH;
     Object.values(ccdm.players).forEach((player) => {
         // frame
         player.frame();
@@ -170,40 +169,8 @@ const main_frame = () => {
             front_view_x = player.view_x + CONF.FIELD_WIDTH;
         }
     });
-    // Object.values(ccdm.enemys).forEach((enemy)=>{
-    //     if(enemy.x < front_view_x){
-    //         enemy.sleep = false;
-    //     }
-    //     if(enemy.sleep){ return }
-
-    //     enemy.self_move();
-    //     Object.values(ccdm.players).forEach((player)=>{
-    //         if(enemy.intersect(player)){
-    //             player.respone();
-    //         }
-    //     });
-    // });
-    // Object.values(ccdm.players).forEach((player) => {
-    //     const movement = player.movement;
-    //     if(movement.forward){
-    //         player.move(move_score);
-    //     }
-    //     if(movement.back){
-    //         player.move(-move_score);
-    //     }
-    //     if(movement.left){
-    //         player.angle = Math.PI * 1;
-    //         player.move(move_score);
-    //     }
-    //     if(movement.right){
-    //         player.angle = Math.PI * 0;
-    //         player.move(move_score);
-    //     }
-    //     if(movement.up){
-    //     }
-    //     if(movement.down){
-    //     }
-    // });
+    console.log(`debug: my_player[ view_x, x, y ]: [${my_player.view_x}\t${my_player.x}\t${my_player.y}]`);
+    console.log(`debug: front_view_x: ${front_view_x}`);
 }
 
 let start_flg = false;
@@ -223,17 +190,10 @@ function gameStart(){
     });
 }
 
-socket.on('new-player', function(param) {
+socket.on('new-player', function(player) {
     console.log(`call new-player`);
     $("#start-screen").hide();
-    my_player = new Player({
-        socketId: param.socketId,
-        nickname: param.nickname,
-        id: param.id,
-        END_POINT: param.END_POINT,
-        x: param.x,
-        y: param.y,
-    });
+    my_player = new Player(player);
     ccdm.players[my_player.id] = my_player;
     if(!start_flg){
         setInterval(interval_game, 1000/CONF.FPS);
