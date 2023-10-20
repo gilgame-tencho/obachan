@@ -22,6 +22,7 @@ images.map = {
 }
 images.piece = {
     normal: $('#img-block-normal')[0],
+    hard: $('#img-block-hard')[0],
 }
 
 let my_player;
