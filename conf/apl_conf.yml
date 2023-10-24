@@ -5,6 +5,7 @@ BLK: 16
 CENTER: 8
 
 # Game base config
+RTms_Psec: 1000
 FPS: 30
 move_speed: 4
 fall_speed: 8
