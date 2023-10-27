@@ -59,7 +59,7 @@ function view_reset_middle(){
 }
 function view_reset_background(){
     cotxBK.clearRect(0, 0, canvBK.width, canvBK.height);
-    // drawImage(cotxBK, images.bg.feald, 0, 0, canvBK.width, canvBK.height);
+    drawImage(cotxBK, images.map.standard, 0, 0, canvBK.width, canvBK.height);
 }
 function view_reset_all(){
     view_reset_front();
@@ -175,13 +175,20 @@ const main_frame = () => {
 
 let start_flg = false;
 let game_timer = null;
+let server_reqest_frame = Math.round(CONF.ServerReqFPS / CONF.FPS);
+let frame_counter = 0;
 
 const interval_game = () => {
     start_flg = true;
     main_frame();
     draw_view();
     menu_frame();
-    socket.emit('state', my_player);
+    if(frame_counter % server_reqest_frame == 0){
+        socket.emit('state', my_player);
+        frame_counter = 0;
+    }else{
+        frame_counter += 1;
+    }
 }
 
 function gameStart(){
@@ -202,6 +209,7 @@ socket.on('new-player', function(player) {
         my_player.respone();
     }
     if(!start_flg){
+        frame_counter = 0;
         game_timer = setInterval(interval_game, 1000/CONF.FPS);
     }
 });
