@@ -9,6 +9,7 @@ CENTER: 8
 ### Game base config
 RTms_Psec: 1000
 FPS: 60
+ServerReqFPS: 30
 # speed is px / 1000ms
 move_speed: 75
 fall_speed: 160
