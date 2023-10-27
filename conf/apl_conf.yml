@@ -1,16 +1,20 @@
-# View config
+################
+### View config
 FIELD_WIDTH: 256
 FIELD_HEIGHT: 240
 BLK: 16
 CENTER: 8
 
-# Game base config
+################
+### Game base config
 RTms_Psec: 1000
-FPS: 30
-move_speed: 4
-fall_speed: 8
-jamp_speed: 8
+FPS: 60
+# speed is px / 1000ms
+move_speed: 75
+fall_speed: 160
+jamp_speed: 160
 jamp_power: 5
 
-# Game System param
+################
+### Game System param
 CMD_HIS: 5

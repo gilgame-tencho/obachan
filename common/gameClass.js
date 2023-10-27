@@ -11,6 +11,9 @@ CONF.DEAD_END = CONF.FIELD_HEIGHT + CONF.BLK * 3;
 CONF.MAX_HEIGHT = CONF.FIELD_HEIGHT / CONF.BLK - 1;
 CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 CONF.FPMS = Math.round(CONF.RTms_Psec / CONF.FPS * 100) / 100;
+CONF.MV_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.move_speed;
+CONF.FALL_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.fall_speed;
+CONF.JAMP_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.jamp_speed;
 
 // File access is there. ====
 
@@ -274,20 +277,20 @@ class Player extends GameObject{
         // console.log(this.cmd_his);
         // movement
         if(command.forward){
-            this.move(CONF.move_speed);
+            this.move(CONF.MV_SPEED);
         }
         if(command.back){
-            this.move(-CONF.move_speed);
+            this.move(-CONF.MV_SPEED);
         }
         if(command.left){
             this.angle = Math.PI * 1;
             this.direction = 'l';
-            this.move(CONF.move_speed);
+            this.move(CONF.MV_SPEED);
         }
         if(command.right){
             this.angle = Math.PI * 0;
             this.direction = 'r';
-            this.move(CONF.move_speed);
+            this.move(CONF.MV_SPEED);
         }
         if(command.up){
         }
@@ -309,7 +312,7 @@ class Player extends GameObject{
         if(this.jampping > 0){
             this.hopping();
         }else{
-            this.fall(CONF.fall_speed);
+            this.fall(CONF.FALL_SPEED);
         }
 
         // command reflesh.
@@ -321,7 +324,7 @@ class Player extends GameObject{
         if(this.auto_move){
             this.angle = Math.PI * 0;
             this.direction = 'r';
-            this.move(CONF.move_speed);
+            this.move(CONF.MV_SPEED);
         }
     }
     collistion(oldX, oldY, oldViewX=this.view_x){
@@ -419,8 +422,8 @@ class Player extends GameObject{
         }
     }
     hopping(){
-        if(this.rise(CONF.jamp_speed)){
-            this.jampping -= CONF.jamp_speed;
+        if(this.rise(CONF.JAMP_SPEED)){
+            this.jampping -= CONF.JAMP_SPEED;
         }else{
             this.jampping = 0;
         }
@@ -473,7 +476,7 @@ class Enemy extends Player{
     self_move(){
         if(this.sleep){ return }
 
-        let speed = Math.floor(CONF.move_speed / 3);
+        let speed = Math.floor(CONF.MV_SPEED / 3);
         if(!this.move(speed)){
             if(this.direction == 'l'){
                 this.direction = 'r';
@@ -483,7 +486,7 @@ class Enemy extends Player{
                 this.angle = Math.PI * 1;
             }
         }
-        this.fall(CONF.fall_speed);
+        this.fall(CONF.FALL_SPEED);
     }
     move(distance){
 
@@ -529,9 +532,10 @@ class Stage extends GeneralObject{
             for(let y=0; y<CONF.MAX_HEIGHT; y++){
                 if(y == CONF.MAX_HEIGHT - 1){
                     if(x % CONF.MAX_WIDTH == 0){
-                        st[x].push('n');
+                        st[x].push('b');
                     }else if(random(3) == 1){
-                        st[x].push('.');
+                        // st[x].push('.');
+                        st[x].push('b');
                     }else{
                         st[x].push('b');
                     }
