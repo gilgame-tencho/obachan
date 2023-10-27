@@ -59,7 +59,7 @@ function view_reset_middle(){
 }
 function view_reset_background(){
     cotxBK.clearRect(0, 0, canvBK.width, canvBK.height);
-    // drawImage(cotxBK, images.bg.feald, 0, 0, canvBK.width, canvBK.height);
+    drawImage(cotxBK, images.map.standard, 0, 0, canvBK.width, canvBK.height);
 }
 function view_reset_all(){
     view_reset_front();
