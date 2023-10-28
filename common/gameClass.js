@@ -259,6 +259,7 @@ class Player extends GameObject{
         this.direction = 'r';  // direction is right:r, left:l;
         this.jampping = 0;
         this.jump_count = 0;
+        this.jamp_cmd = false;
         this.flg_fly = true;
         this.cmd_his = []; //command history. FIFO.
         for(let i=0; i<CONF.CMD_HIS; i++){
@@ -304,7 +305,8 @@ class Player extends GameObject{
             this.dash(false);
         }
 
-        if(command.jump){
+        if(command.jump && this.command == false){
+            this.jamp_cmd = true;
             this.jump();
         }else{
             this.jump_count = 0;
