@@ -253,8 +253,8 @@ class Player extends GameObject{
 
         this.movement = {};
 
-        this.width = CONF.BLK;
-        this.height = CONF.BLK;
+        this.width = CONF.CHAR_W;
+        this.height = CONF.CHAR_Y;
         this.angle = 0;
         this.direction = 'r';  // direction is right:r, left:l;
         this.cmd_unit = {
