@@ -405,16 +405,16 @@ class Player extends GameObject{
         return this.flg_fly;
     }
     jump(cmd){
+        let e = this.cmd_unit.jump.e;
+        let in_action = this.cmd_unit.jump.in_action;
+        let max_e = this.cmd_unit.jump.max_e;
+
         if(!cmd){
             this.cmd_unit.jump.e = 0;
             this.cmd_unit.jump.in_action = false;
             return false;
         }
-        if(this.cmd_unit.jump.in_action){
-            // jump contenu.
-
-        }else{
-            // init?
+        if(!in_action){
             if(this.flg_fly){ // TODO: OR cooltime.
                 return false;
             }
@@ -423,7 +423,7 @@ class Player extends GameObject{
         }
 
         // jump method.
-        if(this.rise(CONF.JUMP_SPEED)){
+        if(e <= max_e && this.rise(CONF.JUMP_SPEED)){
             this.cmd_unit.jump.e += CONF.JUMP_SPEED;
         }else{
             this.cmd_unit.jump.e = 0;
