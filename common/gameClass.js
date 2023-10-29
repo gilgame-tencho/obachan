@@ -410,8 +410,8 @@ class Player extends GameObject{
         let max_e = this.cmd_unit.jump.max_e;
 
         if(!cmd){
-            e = 0;
-            in_action = false;
+            this.cmd_unit.jump.e = 0;
+            this.cmd_unit.jump.in_action = false;
             return false;
         }
         if(!in_action){
@@ -419,15 +419,15 @@ class Player extends GameObject{
                 return false;
             }
             //is init.
-            in_action = true;
+            this.cmd_unit.jump.in_action = true;
         }
 
         // jump method.
-        if(this.rise(CONF.JUMP_SPEED)){
-            e += CONF.JUMP_SPEED;
+        if(e <= max_e && this.rise(CONF.JUMP_SPEED)){
+            this.cmd_unit.jump.e += CONF.JUMP_SPEED;
         }else{
-            e = 0;
-            in_action = false;
+            this.cmd_unit.jump.e = 0;
+            this.cmd_unit.jump.in_action = false;
             return false;
         }
         return true;
