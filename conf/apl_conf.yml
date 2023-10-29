@@ -13,8 +13,8 @@ ServerReqFPS: 30
 # speed is px / 1000ms
 move_speed: 75
 fall_speed: 160
-jamp_speed: 160
-jamp_power: 5
+jump_speed: 160
+jump_power: 5
 
 ################
 ### Game System param

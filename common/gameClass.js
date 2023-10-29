@@ -13,7 +13,7 @@ CONF.MAX_WIDTH = CONF.FIELD_WIDTH / CONF.BLK;
 CONF.FPMS = Math.round(CONF.RTms_Psec / CONF.FPS * 100) / 100;
 CONF.MV_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.move_speed;
 CONF.FALL_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.fall_speed;
-CONF.JAMP_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.jamp_speed;
+CONF.JUMP_SPEED = CONF.FPMS / CONF.RTms_Psec * CONF.jump_speed;
 
 // File access is there. ====
 
@@ -257,8 +257,16 @@ class Player extends GameObject{
         this.height = CONF.BLK;
         this.angle = 0;
         this.direction = 'r';  // direction is right:r, left:l;
-        this.jampping = 0;
-        this.jump_count = 0;
+        this.cmd_unit = {
+            jump: {
+                type: 'single',
+                in_action: false,
+                e: 0,
+                max_e: CONF.jump_power * CONF.BLK,
+                cooltime: 0,
+            }
+        };
+
         this.flg_fly = true;
         this.cmd_his = []; //command history. FIFO.
         for(let i=0; i<CONF.CMD_HIS; i++){
@@ -304,14 +312,8 @@ class Player extends GameObject{
             this.dash(false);
         }
 
-        if(command.jump){
-            this.jump();
-        }else{
-            this.jump_count = 0;
-        }
-        if(this.jampping > 0){
-            this.hopping();
-        }else{
+        // jump
+        if(!this.jump(command.jump)){
             this.fall(CONF.FALL_SPEED);
         }
 
@@ -402,34 +404,33 @@ class Player extends GameObject{
         this.flg_fly = super.fall(distance);
         return this.flg_fly;
     }
-    jump(){
-        if(this.jampping <= 0 && !this.flg_fly && this.jump_count == 0){
-            this.flg_fly = true;
-            this.jampping = 2 * CONF.BLK;
-            this.jump_count = 1;
-        }else if( this.jump_count == 1){
-            this.jump_count = 2;
-        }else if( this.jump_count == 2){
-            this.jampping += 1.5 * CONF.BLK;
-            this.jump_count = 3;
-        }else if( this.jump_count == 3){
-            this.jump_count = 4;
-        }else if( this.jump_count == 4){
-            this.jampping += 1.5 * CONF.BLK;
-            this.jump_count = 5;
+    jump(cmd){
+        if(!cmd){
+            this.cmd_unit.jump.e = 0;
+            this.cmd_unit.jump.in_action = false;
+            return false;
+        }
+        if(this.cmd_unit.jump.in_action){
+            // jump contenu.
+
         }else{
-            this.jump_count = 0;
+            // init?
+            if(this.flg_fly){ // TODO: OR cooltime.
+                return false;
+            }
+            //is init.
+            this.cmd_unit.jump.in_action = true;
         }
-    }
-    hopping(){
-        if(this.rise(CONF.JAMP_SPEED)){
-            this.jampping -= CONF.JAMP_SPEED;
+
+        // jump method.
+        if(this.rise(CONF.JUMP_SPEED)){
+            this.cmd_unit.jump.e += CONF.JUMP_SPEED;
         }else{
-            this.jampping = 0;
+            this.cmd_unit.jump.e = 0;
+            this.cmd_unit.jump.in_action = false;
+            return false;
         }
-        if(this.jampping <= 0){
-            this.jampping = 0;
-        }
+        return true;
     }
     dash(sw){
         if(sw){
