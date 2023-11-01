@@ -4,6 +4,8 @@ FIELD_WIDTH: 256
 FIELD_HEIGHT: 240
 BLK: 16
 CENTER: 8
+CHAR_W: 14
+CHAR_Y: 14
 
 ################
 ### Game base config
