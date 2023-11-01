@@ -37,7 +37,7 @@ io.on('connection', function(socket) {
             id: config.id,
             END_POINT: ccdm.stage.END_POINT,    //??
             x: CONF.BLK * 2,
-            y: CONF.FIELD_HEIGHT * 0.5,
+            y: CONF.FIELD_HEIGHT * 0.2,
         });
         ccdm.players[player.id] = player;
         io.sockets.emit('new-player', player);
