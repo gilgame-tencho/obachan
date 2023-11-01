@@ -546,6 +546,9 @@ class Stage extends GeneralObject{
                         blk_exist = true;
                     }else if(random(3) == 1){
                         st[x].push('.');
+                    }else if(random(5) == 1){
+                        st[x].push('i');
+                        blk_exist = true;
                     }else{
                         st[x].push('b');
                         blk_viewing = true;
@@ -617,6 +620,15 @@ class hardBlock extends commonBlock{
         this.height = CONF.BLK * 1;
     }
 }
+class ichigoBlock extends commonBlock{
+    constructor(obj={}){
+        super(obj);
+        // this.type = "hard";
+        this.type = "ichigo";
+        this.height = CONF.BLK * 2;
+        this.width = CONF.BLK * 2;
+    }
+}
 class normalBlock extends commonBlock{
     constructor(obj={}){
         super(obj);
@@ -680,7 +692,10 @@ class GameMaster{
                     let block = new normalBlock(param);
                     ccdm.blocks[block.id] = block;
                 }
-
+                if(point === 'i'){
+                    let block = new ichigoBlock(param);
+                    ccdm.blocks[block.id] = block;
+                }
                 y++;
             });
             x++;

@@ -21,6 +21,7 @@ images.map = {
 images.piece = {
     normal: $('#img-block-normal')[0],
     hard: $('#img-block-hard')[0],
+    ichigo: $('#img-block-ichigo')[0],
 }
 
 let my_player;
