@@ -281,6 +281,7 @@ class Player extends GameObject{
         this.movement = param;
     }
     frame(){
+        this.score_cal();
         let command = this.movement;
         // console.log(this.cmd_his);
         // movement
@@ -439,6 +440,9 @@ class Player extends GameObject{
             this.speed = 1;
         }
     }
+    score_cal(){
+        this.menu.score.v += Math.round(CONF.MV_SPEED,0);
+    }
     remove(){
         delete players[this.id];
         io.to(this.socketId).emit('dead');
@@ -449,6 +453,7 @@ class Player extends GameObject{
         this.y = CONF.FIELD_HEIGHT * 0.2;
         this.view_x = 0;
         this.dead_flg = false;
+        this.menu.score.v = 0;
     }
     toJSON(){
         return Object.assign(super.toJSON(), {
