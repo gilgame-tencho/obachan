@@ -102,8 +102,8 @@ const menu_frame = () => {
     cotxFT.strokeStyle = "#000000";
     cotxFT.font = "8px Bold 'ＭＳ ゴシック'";
     cotxFT.fillText(mymenu.name.v, mymenu.name.x, mymenu.name.y);
-    cotxFT.fillText(`000010${mymenu.score.v}`, mymenu.score.x, mymenu.score.y);
-    cotxFT.fillText(`C x 0${mymenu.coin.v}`, mymenu.coin.x, mymenu.coin.y);
+    cotxFT.fillText(`SCORE ${mymenu.score.v}`, mymenu.score.x, mymenu.score.y);
+    //cotxFT.fillText(`C x 0${mymenu.coin.v}`, mymenu.coin.x, mymenu.coin.y);
     cotxFT.fillText(mymenu.stage_name.v, mymenu.stage_name.x, mymenu.stage_name.y);
     cotxFT.fillText(mymenu.stage_no.v, mymenu.stage_no.x, mymenu.stage_no.y);
     cotxFT.fillText(mymenu.time_title.v, mymenu.time_title.x, mymenu.time_title.y);
