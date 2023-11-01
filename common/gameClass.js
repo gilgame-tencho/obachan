@@ -446,7 +446,7 @@ class Player extends GameObject{
     respone(){
         // delete ccdm.players[this.id];
         this.x = CONF.BLK * 2;
-        this.y = CONF.FIELD_HEIGHT * 0.5;
+        this.y = CONF.FIELD_HEIGHT * 0.2;
         this.view_x = 0;
         this.dead_flg = false;
     }
@@ -528,26 +528,54 @@ class Stage extends GeneralObject{
     }
     def(){
         let st = [];
+        let blk_y = CONF.MAX_HEIGHT - 1;
+        let blk_exist = false;
+        let blk_viewing = false;
+        let blk_height = 3;
         for(let x=0; x<CONF.MAX_WIDTH*30; x++){
             st.push([]);
             for(let y=0; y<CONF.MAX_HEIGHT; y++){
-                if(y == CONF.MAX_HEIGHT - 1){
+                if(blk_viewing){
+                    st[x].push('b');
+                    blk_height--;
+                }else if(y == blk_y){
                     if(x % CONF.MAX_WIDTH == 0){
                         st[x].push('n');
+                        blk_viewing = true;
+                        blk_height--;
+                        blk_exist = true;
                     }else if(random(3) == 1){
                         st[x].push('.');
                     }else{
                         st[x].push('b');
+                        blk_viewing = true;
+                        blk_height--;
+                        blk_exist = true;
                     }
                 }else{
                     st[x].push('.');
                 }
+                if(blk_viewing && blk_height < 1){
+                    blk_viewing = false;
+                }
             }
+            if(blk_exist){
+                blk_y = this.rand_step(blk_y);
+                blk_exist = false;
+                blk_height = random(5)+1;
+            }
+            blk_viewing = false;
         }
         return st;
     }
     load_stage(){
         return this.def();
+    }
+    rand_step(step){
+        // range: 5 ~ max -1
+        let min = 5;
+        let max = CONF.MAX_HEIGHT - 1;
+        return random(max - min) + min;
     }
     toJSON(){
         return Object.assign(super.toJSON(),{
@@ -586,7 +614,7 @@ class hardBlock extends commonBlock{
         super(obj);
         // this.type = "hard";
         this.type = "hard";
-        this.height = CONF.BLK * 2;
+        this.height = CONF.BLK * 1;
     }
 }
 class normalBlock extends commonBlock{
