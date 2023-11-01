@@ -528,16 +528,19 @@ class Stage extends GeneralObject{
     }
     def(){
         let st = [];
+        let height = CONF.MAX_HEIGHT - 1;
         for(let x=0; x<CONF.MAX_WIDTH*30; x++){
             st.push([]);
             for(let y=0; y<CONF.MAX_HEIGHT; y++){
-                if(y == CONF.MAX_HEIGHT - 1){
+                if(y == height){
                     if(x % CONF.MAX_WIDTH == 0){
                         st[x].push('n');
+                        height = this.rand_step(height);
                     }else if(random(3) == 1){
                         st[x].push('.');
                     }else{
                         st[x].push('b');
+                        height = this.rand_step(height);
                     }
                 }else{
                     st[x].push('.');
@@ -548,6 +551,12 @@ class Stage extends GeneralObject{
     }
     load_stage(){
         return this.def();
+    }
+    rand_step(step){
+        // range: 5 ~ max -1
+        let min = 5;
+        let max = CONF.MAX_HEIGHT - 1;
+        return random(max - min) + min;
     }
     toJSON(){
         return Object.assign(super.toJSON(),{
