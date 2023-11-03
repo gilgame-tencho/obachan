@@ -250,6 +250,8 @@ class Player extends GameObject{
             time_title: { x: CONF.BLK*13, y: CONF.BLK*1, v:"TIME" },
             time:       { x: CONF.BLK*13, y: CONF.BLK*2, v:300 },
         }
+        this.score_interval = CONF.FPS;
+        this.score_i = 0;
 
         this.movement = {};
 
@@ -441,7 +443,11 @@ class Player extends GameObject{
         }
     }
     score_cal(){
-        this.menu.score.v += Math.round(CONF.MV_SPEED,0);
+        if(this.score_i > this.score_interval){
+            this.menu.score.v += Math.round(CONF.MV_SPEED * this.score_interval,0);
+            this.score_i = 0;
+        }
+        this.score_i ++;
     }
     remove(){
         delete players[this.id];
